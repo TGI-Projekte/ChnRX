@@ -2,12 +2,19 @@
 dist/
 build/
 
-#netbeans specific
+#maven specific
+target/
 
+#netbeans specific
 nbproject/*
 !nbproject/project.properties
 !nbproject/project.xml
 !nbproject/jfx-impl.xml
+/nbproject/private/
+/build/
+/dist/
+nbactions.xml
+nb-configuration.xml
 
 #java specific
 *.class
@@ -20,6 +27,6 @@ nbproject/*
 *.swp
 *.DS_Store
 *.lock
-/nbproject/private/
-/build/
-/dist/
+release.properties
+pom.xml.releaseBackup
+pom.xml.tag
