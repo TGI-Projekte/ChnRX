@@ -15,6 +15,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JColorChooser;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
@@ -25,7 +26,7 @@ import javax.swing.WindowConstants;
  *
  * @author Julian
  */
-public class SpielerEditorGUI extends JFrame{
+public class SpielerEditorGUI extends JDialog{
 
     // Anfang Attribute
     private JLabel lblName = new JLabel();
@@ -45,6 +46,7 @@ public class SpielerEditorGUI extends JFrame{
     public SpielerEditorGUI(Steuerung steuerungsobj, boolean bearbeiten) {
         // Frame-Initialisierung
         super();
+        setModalityType(ModalityType.APPLICATION_MODAL);
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         int frameWidth = 247;
         int frameHeight = 167;

@@ -17,16 +17,14 @@ public class ChnRX {
     public static final String version = "v0.5.0";
 
     public ChnRX() {
-        // Sets the LaF to the System LaF..
+        // Setzt das LaF auf das System LaF..
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         steu = new Steuerung();
-
     }
 
     public static void restart() {
