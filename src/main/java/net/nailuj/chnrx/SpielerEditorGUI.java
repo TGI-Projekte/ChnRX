@@ -11,12 +11,10 @@ import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JColorChooser;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -26,7 +24,7 @@ import javax.swing.WindowConstants;
  *
  * @author Julian
  */
-public class SpielerEditorGUI extends JDialog{
+public class SpielerEditorGUI extends JDialog {
 
     // Anfang Attribute
     private JLabel lblName = new JLabel();
@@ -44,8 +42,19 @@ public class SpielerEditorGUI extends JDialog{
 // Ende Attribute
 
     public SpielerEditorGUI(Steuerung steuerungsobj, boolean bearbeiten) {
+        steu = steuerungsobj;
+        init(bearbeiten);
+    } // end of public SpielerEditorGUI
+
+    SpielerEditorGUI(Steuerung steuerung, boolean b, Spieler ausgewspieler) {
+        steu = steuerung;
+        spieler = ausgewspieler;
+        init(b);
+    }
+
+    // Anfang Methoden
+    public void init(boolean bearbeiten) {
         // Frame-Initialisierung
-        super();
         setModalityType(ModalityType.APPLICATION_MODAL);
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         int frameWidth = 247;
@@ -107,14 +116,18 @@ public class SpielerEditorGUI extends JDialog{
         });
         cp.add(btnLoschen);
         // Ende Komponenten
-        steu = steuerungsobj;
+        if (spieler != null) {
+            txtName.setText(spieler.getName());
+            choosencol = spieler.getFarbe();
+            bFarbeauswahlen.setBackground(choosencol);
+            cbIstAI.setSelected(spieler.istAI());
+        }
         if (bearbeiten == false) {
             btnLoschen.setEnabled(false);
         } // end of if
         setVisible(true);
-    } // end of public SpielerEditorGUI
+    }
 
-    // Anfang Methoden
     public Color clColor_getColor() {
         return JColorChooser.showDialog(this, "", Color.BLUE);
     }
