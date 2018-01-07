@@ -61,17 +61,21 @@ class Steuerung {
             System.out.println("Keine Spieler vorhanden..");
             return null;
         } else {
-            return spieler.get(index);
+            try {
+                return spieler.get(index);
+            } catch (IndexOutOfBoundsException ex) {
+                return null;
+            }
         } // end of if
     }
 
     public void startClicked() {
         Dimension groesse = einstgui.getSelectedGroesse();
         gui = new SpielGUI(this, groesse);
-        spiel = new SpielSteuerung(this, spieler, groesse);
+        spiel = new SpielSteuerung(this, spieler, groesse, einstgui.isOnline(), einstgui.isHost());
     }
 
-    public void aktualisiereSpielfeld(SpielSteuerung.Feld[][] felder) {
+    public void aktualisiereSpielfeld(Spiel.Feld[][] felder) {
         //    System.out.println(""+felder.length+", "+felder[0].length);
         for (int i = 0; i < felder.length; i++) {
             for (int j = 0; j < felder[0].length; j++) {
@@ -90,4 +94,7 @@ class Steuerung {
         gui.changeBorderColor(farbe);
     }
 
+    public SpielGUI getGUI(){
+        return gui;
+    }
 }

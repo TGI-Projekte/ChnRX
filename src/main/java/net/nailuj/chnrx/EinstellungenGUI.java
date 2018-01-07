@@ -10,11 +10,11 @@ import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -24,7 +24,6 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 /**
  *
@@ -42,9 +41,13 @@ class EinstellungenGUI extends JFrame {
     private JList listSpieler = new JList();
     private DefaultListModel listSpielerModel = new DefaultListModel();
     private JScrollPane listSpielerScrollPane = new JScrollPane(listSpieler);
-    private JButton bNeu = new JButton();
+    private JButton btnNeu = new JButton();
     private JButton btnAndern = new JButton();
     private JButton btnStart = new JButton();
+    private JCheckBox cbOnline = new JCheckBox();
+    private JRadioButton rbHost = new JRadioButton();
+    private JRadioButton rbClient = new JRadioButton();
+    private ButtonGroup bgHostClient = new ButtonGroup();
     // Ende Attribute
     private Steuerung steu;
 
@@ -53,7 +56,7 @@ class EinstellungenGUI extends JFrame {
         super();
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         int frameWidth = 230;
-        int frameHeight = 307;
+        int frameHeight = 358;
         setSize(frameWidth, frameHeight);
         Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
         int x = (d.width - getSize().width) / 2;
@@ -98,13 +101,13 @@ class EinstellungenGUI extends JFrame {
         });
         listSpieler.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         cp.add(listSpielerScrollPane);
-        bNeu.setBounds(96, 192, 57, 25);
-        bNeu.setText("Neu");
-        bNeu.setMargin(new Insets(2, 2, 2, 2));
-        bNeu.addActionListener((ActionEvent evt) -> {
+        btnNeu.setBounds(96, 192, 57, 25);
+        btnNeu.setText("Neu");
+        btnNeu.setMargin(new Insets(2, 2, 2, 2));
+        btnNeu.addActionListener((ActionEvent evt) -> {
             bNeu_ActionPerformed(evt);
         });
-        cp.add(bNeu);
+        cp.add(btnNeu);
         btnAndern.setBounds(160, 192, 57, 25);
         btnAndern.setText("Ändern");
         btnAndern.setMargin(new Insets(2, 2, 2, 2));
@@ -112,17 +115,36 @@ class EinstellungenGUI extends JFrame {
             btnAndern_ActionPerformed(evt);
         });
         cp.add(btnAndern);
-        btnStart.setBounds(8, 224, 209, 41);
+        btnStart.setBounds(8, 272, 209, 41);
         btnStart.setText("Start");
         btnStart.setMargin(new Insets(2, 2, 2, 2));
         btnStart.addActionListener((ActionEvent evt) -> {
             btnStart_ActionPerformed(evt);
         });
         cp.add(btnStart);
+        cbOnline.setBounds(8, 224, 60, 20);
+        cbOnline.setOpaque(false);
+        cbOnline.setText("Online");
+        cbOnline.addActionListener((ActionEvent e) -> {
+            cbOnline_ActionPerformed(e);
+        });
+        cp.add(cbOnline);
+        rbHost.setBounds(96, 224, 100, 20);
+        rbHost.setOpaque(false);
+        rbHost.setText("Host");
+        rbHost.setEnabled(false);
+        bgHostClient.add(rbHost);
+        cp.add(rbHost);
+        rbClient.setBounds(96, 248, 100, 20);
+        rbClient.setOpaque(false);
+        rbClient.setText("Client");
+        rbClient.setEnabled(false);
+        bgHostClient.add(rbClient);
+        cp.add(rbClient);
         // Ende Komponenten
         steu = steuerung;
         setVisible(true);
-        bNeu.requestFocus();
+        btnNeu.requestFocus();
     } // end of public EinstellungenGUI
 
     // Anfang Methoden
@@ -145,11 +167,23 @@ class EinstellungenGUI extends JFrame {
         if (ausgewspieler == null) {
             return;
         } // end of if
-        new SpielerEditorGUI(steu, true).setzeSpieler(ausgewspieler);
+        new SpielerEditorGUI(steu, true, ausgewspieler);
     } // end of btnAndern_ActionPerformed
 
     public void btnStart_ActionPerformed(ActionEvent evt) {
         if (steu.holeSpieler(0) != null) {
+            if(rbClient.isSelected()){
+                if (steu.holeSpieler(1) != null) {
+                    System.out.println("Bitte lege als Client maximal einen Spieler an!");
+                    return;
+                }
+            }
+            if(rbHost.isSelected()){
+                if(steu.holeSpieler(1) == null){
+                    System.out.println("Bitte lege als Server mehr als einen Spieler an!");
+                    return;
+                }
+            }
             this.setVisible(false);
             this.dispose();
             steu.startClicked();
@@ -182,5 +216,25 @@ class EinstellungenGUI extends JFrame {
             groesse.setSize(15, 10);
         } // end of if
         return groesse;
+    }
+
+    private void cbOnline_ActionPerformed(ActionEvent e) {
+        if (cbOnline.isSelected()) {
+            rbHost.setEnabled(true);
+            rbClient.setEnabled(true);
+            rbHost.setSelected(true);
+        } else {
+            rbHost.setEnabled(false);
+            rbClient.setEnabled(false);
+            bgHostClient.clearSelection();
+        }
+    }
+
+    public boolean isOnline() {
+        return cbOnline.isSelected();
+    }
+
+    public boolean isHost() {
+        return rbHost.isSelected();
     }
 }

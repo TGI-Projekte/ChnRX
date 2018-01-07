@@ -38,7 +38,7 @@ public class SpielGUI extends JFrame {
         super();
         steu = steuobjekt;
         feldgroesse = groesse;
-        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         int frameWidth = 80 * (int) feldgroesse.getWidth();
         int frameHeight = 80 * (int) feldgroesse.getHeight();
@@ -83,6 +83,7 @@ public class SpielGUI extends JFrame {
         setLocationRelativeTo(null);
         setVisible(true);
         cp.setPreferredSize(new Dimension(frameWidth, frameHeight));
+        
         pack();
     }
 
