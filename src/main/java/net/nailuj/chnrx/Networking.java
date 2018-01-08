@@ -34,16 +34,23 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 
 /**
- *
- * @author Julian
+ * Networking.java Zweck: Dient als Schnittstelle zwischen Programm und dem
+ * jeweiligen Spiel-Server.
  */
 public class Networking {
+
     private String serverurl;
-    
+
     public Networking(String url) {
         serverurl = url;
     }
-    
+
+    /**
+     * Liest das aktuelle Spiel vom Webserver und deserialisiert es zu einem
+     * Objekt der Klasse "Spiel"
+     *
+     * @return Ein Objekt der Klasse Spiel
+     */
     public Spiel getGameWeb() {
         try {
             CloseableHttpClient client = HttpClientBuilder.create().build();
@@ -70,8 +77,14 @@ public class Networking {
         }
         return null;
     }
-    
-    public boolean postGameWeb(Spiel spiel){
+
+    /**
+     * Serialisiert und postet das gegebene Spiel auf den Spiel-Server
+     *
+     * @param spiel Ein Objekt der Klasse Spiel das gepostet werden soll.
+     * @return Boolean ob das posten erfolgreich war
+     */
+    public boolean postGameWeb(Spiel spiel) {
         try {
             CloseableHttpClient client = HttpClientBuilder.create().build();
             HttpPost post = new HttpPost(serverurl + "post");
@@ -85,7 +98,7 @@ public class Networking {
                 System.out.println("Failed to post the game to " + serverurl + " (" + res.getStatusLine().getStatusCode() + ")");
                 client.close();
                 return false;
-            } 
+            }
             client.close();
             return true;
         } catch (IOException ex) {

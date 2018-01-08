@@ -32,18 +32,16 @@ import javax.swing.WindowConstants;
 import javax.swing.border.Border;
 
 /**
- *
- * @author Julian
+ * SpielGUI.java Zweck: Das JFrame in dem das eigentliche Spiel abläuft.
  */
 public class SpielGUI extends JFrame {
-    // Anfang Attribute
 
     private JLabel l3 = new JLabel();
     private JLabel[][] labelarray;
     private Dimension feldgroesse;
     private Steuerung steu;
 
-    // Ende Attribute
+    // TODO: Initialisierung außerhalb des Konstruktors
     public SpielGUI(Steuerung steuobjekt, Dimension groesse) {
         // Frame-Initialisierung
         super();
@@ -64,8 +62,7 @@ public class SpielGUI extends JFrame {
 
         Container cp = getContentPane();
         cp.setLayout(null);
-        // Anfang Komponenten
-        // Ende Komponenten
+        
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -77,6 +74,7 @@ public class SpielGUI extends JFrame {
 
         Border border = BorderFactory.createLineBorder(Color.black);
 
+        // Initialisierung der visuellen Repräsentierung des Spielfelds
         for (int i = 0; i < feldgroesse.getHeight(); i++) {
             for (int j = 0; j < feldgroesse.getWidth(); j++) {
                 ClickListener listener = new ClickListener(j, i);
@@ -91,14 +89,21 @@ public class SpielGUI extends JFrame {
                 cp.add(labelarray[j][i]);
             }
         } // end of for
+        
+        // Setze das Fenster mittig
         setLocationRelativeTo(null);
+        
         setVisible(true);
         cp.setPreferredSize(new Dimension(frameWidth, frameHeight));
-        
+
         pack();
     }
 
-    // Anfang Methoden
+    /**
+     * Ändert alle Kanten der Labels zu einer Farbe.
+     *
+     * @param c Die Farbe zu der diese geändert werden sollen.
+     */
     public void changeBorderColor(Color c) {
         Border border = BorderFactory.createLineBorder(c);
 
@@ -114,6 +119,9 @@ public class SpielGUI extends JFrame {
         steu.feldGedrueckt(x, y);
     }
 
+    /**
+     * Ein Mouselistener für die einzelnen JLabels
+     */
     private class ClickListener extends MouseAdapter {
 
         public final int x;
@@ -139,6 +147,6 @@ public class SpielGUI extends JFrame {
     }
 
     private void frame_KeyTyped(KeyEvent evt) {
-        //TODO
+        
     }
 } // end of class SpielGUI

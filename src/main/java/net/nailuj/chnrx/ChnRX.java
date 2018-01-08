@@ -19,8 +19,8 @@ package net.nailuj.chnrx;
 import javax.swing.UIManager;
 
 /**
- *
- * @author Julian
+ * ChnRX.java Zweck: Startet das Spiel und setzt das Systemspezifische Swing
+ * Look-and-feel.
  */
 public class ChnRX {
 
@@ -38,6 +38,10 @@ public class ChnRX {
         steu = new Steuerung();
     }
 
+    /**
+     * Startet das Spiel neu durch löschen und neuerzeugen des Steuerung
+     * Objektes. Zudem wird der JVM Garbage Collector aufgerufen.
+     */
     public static void restart() {
         System.out.println("Spiel wird neugestartet..");
         steu = null;

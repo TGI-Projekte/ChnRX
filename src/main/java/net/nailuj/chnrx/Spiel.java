@@ -21,8 +21,8 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 /**
- *
- * @author Julian
+ * Spiel.java Zweck: Repräsentiert ein Spiel. Benutzt UUIDs ( Unique User IDs )
+ * zum Unterscheiden verschiedener Versionen des Spiel Objekts.
  */
 public class Spiel {
 
@@ -31,6 +31,9 @@ public class Spiel {
     private ArrayList<Spieler> spieler;
     private String statusUUID;
 
+    /**
+     * Spiel.Feld
+     */
     public static class Feld {
         // Anfang Attribute1
 
@@ -112,12 +115,12 @@ public class Spiel {
     public void setSpieler(ArrayList<Spieler> spieler) {
         this.spieler = spieler;
     }
-    
-    public String getUUID(){
+
+    public String getUUID() {
         return statusUUID;
     }
-    
-    public void newUUID(){
+
+    public void newUUID() {
         statusUUID = UUID.randomUUID().toString();
     }
 }

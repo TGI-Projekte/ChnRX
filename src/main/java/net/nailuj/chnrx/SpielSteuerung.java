@@ -25,20 +25,15 @@ import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 /**
- *
- * @author Julian
+ * SpielSteuerung.java Zweck: Die Hauptklasse für das Steuern des Spiels.
  */
 class SpielSteuerung {
 
-    // Anfang Attribute
     private Spiel spiel;
-//    private ArrayList<Spieler> spieler;
     private Steuerung steu;
-//    private Feld[][] felder;
-//    private Spieler aktuellerSpieler;
     private int aktuellerIndex = 0;
     private boolean akzeptiereKlicks = false;
-    private String serverurl = "https://whispering-waste.glitch.me/";
+    private String serverurl = "https://chnrx-server.glitch.me/"; // Server 01
     private Networking web;
     private Spieler eigenerSpieler; // Nur bei Netzwerk benutzt
     private boolean spielWirdGeaendert = false;
@@ -50,26 +45,38 @@ class SpielSteuerung {
         steu = steuobj;
         if (isOnline) {
             web = new Networking(serverurl);
+
+            // Setzt den Korrekten Spieler
             if (isHost) {
                 eigenerSpieler = spielerliste.get(0);
-            } else {
+            } else { // isClient
                 spiel = web.getGameWeb();
                 for (Spieler spieler : spiel.getSpieler()) {
                     if (spielerliste.get(0).getName().equals(spieler.getName())) {
                         eigenerSpieler = spieler;
                     }
                 }
+                if (eigenerSpieler == null) {
+                    System.err.println("Kein Spieler mit den Namen " + spielerliste.get(0).getName() + " wurde in dem Spiel auf " + serverurl + " gefunden!");
+                }
             }
+
             refreshWeb = new Thread(() -> {
                 while (true) {
+                    // Das Spiel wird nur vom Server abgerufen wenn es im Moment auch wirklich nicht bearbeitet wird.
                     if (!spielWirdGeaendert) {
                         akzeptiereKlicks = false;
                         Spiel tempSpiel = web.getGameWeb();
-                        System.out.println("invoked!");
+
+                        /*
+                        Falls das Spiel keine änderung vorweist,
+                        so ersetze das aktuelle nicht und berechne es auch nicht neu.
+                         */
                         if (!spiel.getUUID().equals(tempSpiel.getUUID())) {
                             spiel = tempSpiel;
                             berechneSpiel();
                         }
+
                         steu.aktualisiereSpielfeld(spiel.getFelder());
                         steu.setzeRandFarbe(spiel.getAktuellerSpieler().getFarbe());
                         akzeptiereKlicks = true;
@@ -79,10 +86,13 @@ class SpielSteuerung {
                     } catch (InterruptedException ex) {
                         Logger.getLogger(SpielSteuerung.class.getName()).log(Level.SEVERE, null, ex);
                     }
+
                 }
             });
             refreshWeb.start();
         }
+
+        // Initialisiert das Spiel auf Datenebene
         if (isOnline && isHost || !isOnline) {
             spiel = new Spiel();
             spiel.setSpieler(spielerliste);
@@ -95,16 +105,20 @@ class SpielSteuerung {
 
             spiel.setAktuellerSpieler(spiel.getSpieler().get(0));
         }
+
         steu.setzeRandFarbe(spiel.getAktuellerSpieler().getFarbe());
         steu.aktualisiereSpielfeld(spiel.getFelder());
-        if (isHost) {
-            spiel.newUUID();
+
+        if (isHost) { // Postet das neu initialisierte Spiel
+            spiel.newUUID(); // Setzt eine neue UUID da änderungen am Objekt gemacht wurden
             web.postGameWeb(spiel);
         }
+
         akzeptiereKlicks = true;
         spielWirdGeaendert = false;
     }
     // Anfang Methoden
+    private static final Logger LOG = Logger.getLogger(SpielSteuerung.class.getName());
 
     public void feldGedrueckt(int x, int y) {
         System.out.println("");
@@ -113,16 +127,24 @@ class SpielSteuerung {
         } // end of if
         if (spiel.getFelder()[x][y].holeBesitzerUuid() != null) {
             if (!spiel.getFelder()[x][y].holeBesitzerUuid().equals(spiel.getAktuellerSpieler().getUuidstring())) {
-                return;
+                return; // Falls das Feld bereits besetzt wurde aber dem aktuellen Spieler nicht gehört so mache nichts.
             } // end of if
         }
         if (web != null) {
             if (!eigenerSpieler.getUuidstring().equals(spiel.getAktuellerSpieler().getUuidstring())) {
-                System.out.println("Not your turn!");
+                System.out.println("Du bist nicht dran!");
                 return;
+                /*
+                Falls der eigene Spieler nicht dem durch das Spiel definierte
+                aktuellen Spieler entspricht so mache nichts.
+                 */
             }
         }
         spielWirdGeaendert = true;
+        /*
+        Verhindert, dass das Spiel während der Berechnung vom Spiel vom Server überschrieben wird.
+         */
+
         Spieler aktuellerSpieler;
         if (web == null) {
             aktuellerSpieler = spiel.getAktuellerSpieler();
@@ -139,13 +161,18 @@ class SpielSteuerung {
             public void run() {
                 akzeptiereKlicks = false;
 
+                /*
+                Postet die geänderte Version des Spiels mit einer neuen UUID
+                was bei den anderen Clients bewirkt, dass diese das Spiel
+                updaten und bei sich lokal neu berechnen.
+                 */
                 if (web != null) {
                     spiel.newUUID();
                     web.postGameWeb(spiel);
                 }
 
                 berechneSpiel();
-                
+
                 steu.aktualisiereSpielfeld(spiel.getFelder());
                 steu.setzeRandFarbe(spiel.getAktuellerSpieler().getFarbe());
                 akzeptiereKlicks = true;
@@ -161,6 +188,7 @@ class SpielSteuerung {
         for (int i = 0; i < spiel.getFelder().length; i++) {
             for (int j = 0; j < spiel.getFelder()[0].length; j++) {
                 if (spiel.getFelder()[i][j].holeAnzahl() >= 4) {
+                    // Fügt alle Koordinaten von Feldern einer Liste hinzu deren Werte 4 oder höher sind.
                     punkte.add(new Point(i, j));
                 } // end of if
             } // end of for
@@ -169,12 +197,19 @@ class SpielSteuerung {
             berechneExplosionen(punkte);
             try {
                 Thread.sleep(500);
+                /*
+                Das warten erzeugt einen Effekt wodurch das Spiel in
+                Stufen berechnet wird.
+                */
             } catch (InterruptedException e) {
             }
             steu.aktualisiereSpielfeld(spiel.getFelder());
             berechneSpiel();
         } // end of if
 
+        /*
+        Überprüft ob ein Spieler gewonnen hat.
+        */
         gewonnenCheck:
         for (Spieler spieler : spiel.getSpieler()) {
             for (int i = 0; i < spiel.getFelder().length; i++) {
@@ -187,16 +222,21 @@ class SpielSteuerung {
             refreshWeb.stop();
             JOptionPane.showMessageDialog(null, "" + spieler.getName() + " hat gewonnen!");
         }
-        naechsterSpieler();
+        naechsterSpieler(); // Setzt den Spieler auf den nächsten Spieler
     }
 
+    /**
+     * Berechnet die Explosionen für bestimmte Felder.
+     * @param punkte Eine ArrayListe mit Koordinaten für zu berechnende Felder
+     */
     private void berechneExplosionen(ArrayList<Point> punkte) {
         for (Point punkt : punkte) {
             int x = punkt.x;
             int y = punkt.y;
-            spiel.getFelder()[x][y].setzeAnzahl(0);
-            spiel.getFelder()[x][y].setzeFarbe(Color.BLACK);
-            spiel.getFelder()[x][y].setzeBesitzerUuid(null);
+            spiel.getFelder()[x][y].setzeAnzahl(0); // Setzt die Anzahl zurück
+            spiel.getFelder()[x][y].setzeFarbe(Color.BLACK); // Setzt die Farbe zurück
+            spiel.getFelder()[x][y].setzeBesitzerUuid(null); // Setzt den Besitzer des Feldes zurück
+            
             if (x != 0) {
                 spiel.getFelder()[x - 1][y].setzeAnzahl(spiel.getFelder()[x - 1][y].holeAnzahl() + 1);
                 spiel.getFelder()[x - 1][y].setzeFarbe(spiel.getAktuellerSpieler().getFarbe());
@@ -222,8 +262,8 @@ class SpielSteuerung {
     // Ende Methoden
 
     private void naechsterSpieler() {
-        if (aktuellerIndex == (spiel.getSpieler().size() - 1)) {
-            aktuellerIndex = 0;
+        if (aktuellerIndex == (spiel.getSpieler().size() - 1)) { 
+            aktuellerIndex = 0; // Falls am Ende der Liste angekommen setze am Anfang fort
         } else {
             aktuellerIndex++;
         } // end of if-else

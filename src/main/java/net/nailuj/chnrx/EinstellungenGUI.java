@@ -38,7 +38,7 @@ import javax.swing.event.ListSelectionEvent;
 
 /**
  *
- * @author Julian
+ * 
  */
 class EinstellungenGUI extends JFrame {
 // Anfang Attribute
@@ -183,14 +183,14 @@ class EinstellungenGUI extends JFrame {
 
     public void btnStart_ActionPerformed(ActionEvent evt) {
         if (steu.holeSpieler(0) != null) {
-            if(rbClient.isSelected()){
+            if (rbClient.isSelected()) {
                 if (steu.holeSpieler(1) != null) {
                     System.out.println("Bitte lege als Client maximal einen Spieler an!");
                     return;
                 }
             }
-            if(rbHost.isSelected()){
-                if(steu.holeSpieler(1) == null){
+            if (rbHost.isSelected()) {
+                if (steu.holeSpieler(1) == null) {
                     System.out.println("Bitte lege als Server mehr als einen Spieler an!");
                     return;
                 }
@@ -205,8 +205,6 @@ class EinstellungenGUI extends JFrame {
     } // end of btnStart_ActionPerformed
 
     public void listSpieler_ValueChanged(ListSelectionEvent evt) {
-        // TODO hier Quelltext einfügen
-
     } // end of listSpieler_ValueChanged
 
     public DefaultListModel getListSpielerModel() {

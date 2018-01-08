@@ -20,8 +20,9 @@ import java.awt.Color;
 import java.util.UUID;
 
 /**
+ * Spieler.java Zweck: Dient zum repräsentieren eines Spielers. UUIDs ( Unique
+ * User IDs ) werden benutzt um Spieler eindeutiger zu unterscheiden.
  *
- * @author Julian
  */
 class Spieler {
 
@@ -39,7 +40,6 @@ class Spieler {
         UUID uuid = UUID.randomUUID();
         uuidstring = uuid.toString();
     }
-    // Anfang Methoden
 
     public String getName() {
         return name;
@@ -68,6 +68,4 @@ class Spieler {
     public String getUuidstring() {
         return uuidstring;
     }
-
-    // Ende Methoden
 }

@@ -22,8 +22,9 @@ import java.util.ArrayList;
 import javax.swing.DefaultListModel;
 
 /**
- *
- * @author Julian
+ * Steuerung.java Zweck: Verbindet SpielSteuerung und SpielGUI und ist zuständig
+ * für das Einrichten der Parameter für das Spiel durch die Abfrage mit der
+ * EinstellungenGUI
  */
 class Steuerung {
 
@@ -105,7 +106,7 @@ class Steuerung {
         gui.changeBorderColor(farbe);
     }
 
-    public SpielGUI getGUI(){
+    public SpielGUI getGUI() {
         return gui;
     }
 }
