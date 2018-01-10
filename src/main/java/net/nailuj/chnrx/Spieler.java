@@ -31,6 +31,7 @@ class Spieler {
     private String name;
     private boolean istAI;
     private final String uuidstring;
+    private boolean isActive = false;
     // Ende Attribute
 
     public Spieler(Color clfarbe, String name, boolean istAI) {
@@ -67,5 +68,13 @@ class Spieler {
 
     public String getUuidstring() {
         return uuidstring;
+    }
+    
+    public void setActive(){
+        isActive = true;
+    }
+    
+    public boolean istAktiv(){
+        return isActive;
     }
 }

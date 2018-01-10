@@ -18,8 +18,17 @@ package net.nailuj.chnrx;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Image;
+import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
+import java.awt.image.FilteredImageSource;
+import java.awt.image.ImageFilter;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import javax.imageio.ImageIO;
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 
 /**
  * Steuerung.java Zweck: Verbindet SpielSteuerung und SpielGUI und ist zuständig
@@ -33,7 +42,19 @@ class Steuerung {
     private ArrayList<Spieler> spieler;
     private SpielSteuerung spiel;
 
+    private final boolean useImages = true;
+
+    private BufferedImage[] imgArr = new BufferedImage[4];
+
     public Steuerung() {
+        try {
+            imgArr[0] = ImageIO.read(this.getClass().getResource("/Atom1.png"));
+            imgArr[1] = ImageIO.read(this.getClass().getResource("/Atom2.png"));
+            imgArr[2] = ImageIO.read(this.getClass().getResource("/Atom3.png"));
+            imgArr[3] = ImageIO.read(this.getClass().getResource("/Atom4.png"));
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
         einstgui = new EinstellungenGUI(this);
         spieler = new ArrayList<>();
     }
@@ -92,8 +113,37 @@ class Steuerung {
         for (int i = 0; i < felder.length; i++) {
             for (int j = 0; j < felder[0].length; j++) {
                 //        System.out.println(""+i+", "+j);
-                gui.setzeFeldTextFarbe(felder[i][j].holeFarbe(), i, j);
-                gui.setzeFeldText("" + felder[i][j].holeAnzahl(), i, j);
+                if (!useImages) {
+                    gui.setzeFeldTextFarbe(felder[i][j].holeFarbe(), i, j);
+                    gui.setzeFeldText("" + felder[i][j].holeAnzahl(), i, j);
+                    continue;
+                }
+                BufferedImage image = null;
+
+                switch (felder[i][j].holeAnzahl()) {
+                    case 1:
+                        image = imgArr[0];
+                        break;
+                    case 2:
+                        image = imgArr[1];
+                        break;
+                    case 3:
+                        image = imgArr[2];
+                        break;
+                    case 4:
+                        image = imgArr[3];
+                        break;
+                    default:
+                        gui.setzeFeldText("", i, j);
+                        gui.setzeFeldBild(null, i, j);
+                        continue;
+                }
+                Color col = felder[i][j].holeFarbe();
+                ImageFilter filter = new HueFilter(col);
+                FilteredImageSource filteredSource = new FilteredImageSource(image.getSource(), filter);
+                Image filtered = Toolkit.getDefaultToolkit().createImage(filteredSource);
+                filtered = filtered.getScaledInstance(80, 80, Image.SCALE_SMOOTH);
+                gui.setzeFeldBild(new ImageIcon(filtered), i, j);
             } // end of for
         } // end of for
     }

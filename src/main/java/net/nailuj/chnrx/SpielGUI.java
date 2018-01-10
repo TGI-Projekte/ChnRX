@@ -25,6 +25,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
@@ -62,7 +63,7 @@ public class SpielGUI extends JFrame {
 
         Container cp = getContentPane();
         cp.setLayout(null);
-        
+
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -89,10 +90,10 @@ public class SpielGUI extends JFrame {
                 cp.add(labelarray[j][i]);
             }
         } // end of for
-        
+
         // Setze das Fenster mittig
         setLocationRelativeTo(null);
-        
+
         setVisible(true);
         cp.setPreferredSize(new Dimension(frameWidth, frameHeight));
 
@@ -146,7 +147,12 @@ public class SpielGUI extends JFrame {
         labelarray[x][y].setText(text);
     }
 
+    public void setzeFeldBild(ImageIcon bild, int x, int y) {
+        labelarray[x][y].setText("");
+        labelarray[x][y].setIcon(bild);
+    }
+
     private void frame_KeyTyped(KeyEvent evt) {
-        
+
     }
 } // end of class SpielGUI

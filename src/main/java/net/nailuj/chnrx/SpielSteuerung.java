@@ -75,6 +75,7 @@ class SpielSteuerung {
                         if (!spiel.getUUID().equals(tempSpiel.getUUID())) {
                             spiel = tempSpiel;
                             berechneSpiel();
+                            naechsterSpieler(); // Setzt den Spieler auf den nächsten Spieler
                         }
 
                         steu.aktualisiereSpielfeld(spiel.getFelder());
@@ -154,6 +155,7 @@ class SpielSteuerung {
         spiel.getFelder()[x][y].setzeFarbe(aktuellerSpieler.getFarbe());
         spiel.getFelder()[x][y].setzeBesitzerUuid(aktuellerSpieler.getUuidstring());
         spiel.getFelder()[x][y].setzeAnzahl(spiel.getFelder()[x][y].holeAnzahl() + 1);
+        aktuellerSpieler.setActive();
         steu.aktualisiereSpielfeld(spiel.getFelder());
 
         Thread t = new Thread(new Runnable() {
@@ -172,6 +174,7 @@ class SpielSteuerung {
                 }
 
                 berechneSpiel();
+                naechsterSpieler(); // Setzt den Spieler auf den nächsten Spieler
 
                 steu.aktualisiereSpielfeld(spiel.getFelder());
                 steu.setzeRandFarbe(spiel.getAktuellerSpieler().getFarbe());
@@ -200,7 +203,7 @@ class SpielSteuerung {
                 /*
                 Das warten erzeugt einen Effekt wodurch das Spiel in
                 Stufen berechnet wird.
-                */
+                 */
             } catch (InterruptedException e) {
             }
             steu.aktualisiereSpielfeld(spiel.getFelder());
@@ -209,24 +212,45 @@ class SpielSteuerung {
 
         /*
         Überprüft ob ein Spieler gewonnen hat.
-        */
-        gewonnenCheck:
+         */
+        ArrayList<Spieler> zuLoeschen = new ArrayList<>();
+        gewonnenCheck1:
+        for (Spieler spieler : spiel.getSpieler()) {
+            if (spieler.istAktiv()) {
+                for (int i = 0; i < spiel.getFelder().length; i++) {
+                    for (int j = 0; j < spiel.getFelder()[0].length; j++) {
+                        if (spiel.getFelder()[i][j].holeBesitzerUuid() == spieler.getUuidstring()) {
+                            continue gewonnenCheck1;
+                        }
+                    }
+                }
+            } else {
+                continue;
+            }
+            zuLoeschen.add(spieler);
+        }
+        spiel.getSpieler().removeAll(zuLoeschen);
+        gewonnenCheck2:
         for (Spieler spieler : spiel.getSpieler()) {
             for (int i = 0; i < spiel.getFelder().length; i++) {
                 for (int j = 0; j < spiel.getFelder()[0].length; j++) {
                     if (spiel.getFelder()[i][j].holeBesitzerUuid() != spieler.getUuidstring()) {
-                        continue gewonnenCheck;
+                        continue gewonnenCheck2;
                     }
                 }
             }
-            refreshWeb.stop();
+            if(web!=null) refreshWeb.stop();
             JOptionPane.showMessageDialog(null, "" + spieler.getName() + " hat gewonnen!");
         }
-        naechsterSpieler(); // Setzt den Spieler auf den nächsten Spieler
+        if(spiel.getSpieler().size() == 1){
+            if(web!=null) refreshWeb.stop();
+            JOptionPane.showMessageDialog(null, "" + spiel.getSpieler().get(0).getName() + " hat gewonnen!");
+        }
     }
 
     /**
      * Berechnet die Explosionen für bestimmte Felder.
+     *
      * @param punkte Eine ArrayListe mit Koordinaten für zu berechnende Felder
      */
     private void berechneExplosionen(ArrayList<Point> punkte) {
@@ -236,7 +260,7 @@ class SpielSteuerung {
             spiel.getFelder()[x][y].setzeAnzahl(0); // Setzt die Anzahl zurück
             spiel.getFelder()[x][y].setzeFarbe(Color.BLACK); // Setzt die Farbe zurück
             spiel.getFelder()[x][y].setzeBesitzerUuid(null); // Setzt den Besitzer des Feldes zurück
-            
+
             if (x != 0) {
                 spiel.getFelder()[x - 1][y].setzeAnzahl(spiel.getFelder()[x - 1][y].holeAnzahl() + 1);
                 spiel.getFelder()[x - 1][y].setzeFarbe(spiel.getAktuellerSpieler().getFarbe());
@@ -262,7 +286,7 @@ class SpielSteuerung {
     // Ende Methoden
 
     private void naechsterSpieler() {
-        if (aktuellerIndex == (spiel.getSpieler().size() - 1)) { 
+        if (aktuellerIndex == (spiel.getSpieler().size() - 1)) {
             aktuellerIndex = 0; // Falls am Ende der Liste angekommen setze am Anfang fort
         } else {
             aktuellerIndex++;
