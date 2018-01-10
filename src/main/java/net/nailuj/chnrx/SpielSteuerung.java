@@ -230,18 +230,6 @@ class SpielSteuerung {
             zuLoeschen.add(spieler);
         }
         spiel.getSpieler().removeAll(zuLoeschen);
-        gewonnenCheck2:
-        for (Spieler spieler : spiel.getSpieler()) {
-            for (int i = 0; i < spiel.getFelder().length; i++) {
-                for (int j = 0; j < spiel.getFelder()[0].length; j++) {
-                    if (spiel.getFelder()[i][j].holeBesitzerUuid() != spieler.getUuidstring()) {
-                        continue gewonnenCheck2;
-                    }
-                }
-            }
-            if(web!=null) refreshWeb.stop();
-            JOptionPane.showMessageDialog(null, "" + spieler.getName() + " hat gewonnen!");
-        }
         if(spiel.getSpieler().size() == 1){
             if(web!=null) refreshWeb.stop();
             JOptionPane.showMessageDialog(null, "" + spiel.getSpieler().get(0).getName() + " hat gewonnen!");
