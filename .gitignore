@@ -14,7 +14,6 @@ nbproject/*
 /build/
 /dist/
 nbactions.xml
-nb-configuration.xml
 
 #java specific
 *.class
