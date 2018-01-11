@@ -230,9 +230,12 @@ class SpielSteuerung {
             zuLoeschen.add(spieler);
         }
         spiel.getSpieler().removeAll(zuLoeschen);
-        if(spiel.getSpieler().size() == 1){
-            if(web!=null) refreshWeb.stop();
+        if (spiel.getSpieler().size() == 1) {
+            if (web != null) {
+                refreshWeb.stop();
+            }
             JOptionPane.showMessageDialog(null, "" + spiel.getSpieler().get(0).getName() + " hat gewonnen!");
+            ChnRX.restart();
         }
     }
 
