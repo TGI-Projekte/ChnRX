@@ -31,7 +31,7 @@ import javax.swing.UIManager;
 public class ChnRX {
 
     private static Steuerung steu;
-    public static final String version = "v0.9.0";
+    public static final String version = "v1.0.0";
 
     public ChnRX() {
         // Setzt das LaF auf das System LaF..
