@@ -219,7 +219,7 @@ class SpielSteuerung {
             if (spieler.istAktiv()) {
                 for (int i = 0; i < spiel.getFelder().length; i++) {
                     for (int j = 0; j < spiel.getFelder()[0].length; j++) {
-                        if (spiel.getFelder()[i][j].holeBesitzerUuid() == null ? true : spiel.getFelder()[i][j].holeBesitzerUuid().equals(spieler.getUuidstring())) {
+                        if (spiel.getFelder()[i][j].holeBesitzerUuid() != null && spiel.getFelder()[i][j].holeBesitzerUuid().equals(spieler.getUuidstring())) {
                             continue gewonnenCheck1;
                         }
                     }
