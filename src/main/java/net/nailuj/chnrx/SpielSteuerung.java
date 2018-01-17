@@ -83,7 +83,7 @@ class SpielSteuerung {
                         akzeptiereKlicks = true;
                     }
                     try {
-                        Thread.sleep(2000);
+                        Thread.sleep(300);
                     } catch (InterruptedException ex) {
                         Logger.getLogger(SpielSteuerung.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -213,29 +213,32 @@ class SpielSteuerung {
         /*
         Überprüft ob ein Spieler gewonnen hat.
          */
-        ArrayList<Spieler> zuLoeschen = new ArrayList<>();
-        gewonnenCheck1:
-        for (Spieler spieler : spiel.getSpieler()) {
-            if (spieler.istAktiv()) {
-                for (int i = 0; i < spiel.getFelder().length; i++) {
-                    for (int j = 0; j < spiel.getFelder()[0].length; j++) {
-                        if (spiel.getFelder()[i][j].holeBesitzerUuid() != null && spiel.getFelder()[i][j].holeBesitzerUuid().equals(spieler.getUuidstring())) {
-                            continue gewonnenCheck1;
+        if (punkte.isEmpty()) {
+            ArrayList<Spieler> zuLoeschen = new ArrayList<>();
+            gewonnenCheck1:
+            for (Spieler spieler : spiel.getSpieler()) {
+                if (spieler.istAktiv()) {
+                    for (int i = 0; i < spiel.getFelder().length; i++) {
+                        for (int j = 0; j < spiel.getFelder()[0].length; j++) {
+                            System.out.println(spiel.getFelder()[i][j].holeBesitzerUuid());
+                            if (spiel.getFelder()[i][j].holeBesitzerUuid() != null && spiel.getFelder()[i][j].holeBesitzerUuid().equals(spieler.getUuidstring())) {
+                                continue gewonnenCheck1;
+                            }
                         }
                     }
+                } else {
+                    continue;
                 }
-            } else {
-                continue;
+                zuLoeschen.add(spieler);
             }
-            zuLoeschen.add(spieler);
-        }
-        spiel.getSpieler().removeAll(zuLoeschen);
-        if (spiel.getSpieler().size() == 1) {
-            if (web != null) {
-                refreshWeb.stop();
+            spiel.getSpieler().removeAll(zuLoeschen);
+            if (spiel.getSpieler().size() == 1) {
+                if (web != null) {
+                    refreshWeb.stop();
+                }
+                JOptionPane.showMessageDialog(null, "" + spiel.getSpieler().get(0).getName() + " hat gewonnen!");
+                ChnRX.restart();
             }
-            JOptionPane.showMessageDialog(null, "" + spiel.getSpieler().get(0).getName() + " hat gewonnen!");
-            ChnRX.restart();
         }
     }
 
@@ -276,8 +279,9 @@ class SpielSteuerung {
     }
     // Ende Methoden
 
+    // TODO HIER IST EIN BUG
     private void naechsterSpieler() {
-        if (aktuellerIndex == (spiel.getSpieler().size() - 1)) {
+        if (aktuellerIndex >= (spiel.getSpieler().size() - 1)) {
             aktuellerIndex = 0; // Falls am Ende der Liste angekommen setze am Anfang fort
         } else {
             aktuellerIndex++;
